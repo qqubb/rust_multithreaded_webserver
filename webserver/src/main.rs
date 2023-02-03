@@ -55,6 +55,7 @@ fn handle_connection(mut stream: TcpStream) {
 } // Listing 20-2: Reading from the TcpStream and printing the data
 */
 
+/*
 fn handle_connection(mut stream: TcpStream) {
     let buf_reader = BufReader::new(&mut stream);
     let request_line = buf_reader.lines().next().unwrap().unwrap();
@@ -82,3 +83,26 @@ fn handle_connection(mut stream: TcpStream) {
     } // Listing 20-7: Responding with status code 404 and an error page if anything other than / was requested
     
 } // Listing 20-6: Handling requests to / differently from other requests
+*/
+
+fn handle_connection(mut stream: TcpStream) {
+    // --snip--
+    let buf_reader = BufReader::new(&mut stream);
+    let request_line = buf_reader.lines().next().unwrap().unwrap();
+
+    let (status_line, filename) = if request_line == "GET / HTTP/1.1" {
+        ("HTTP/1.1 200 OK", "hello.html")
+    } else {
+        ("HTTP/1.1 404 NOT FOUND", "404.html")
+    };
+
+    let contents = fs::read_to_string(filename).unwrap();
+    let length = contents.len();
+
+    let response =
+        format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+
+    stream.write_all(response.as_bytes()).unwrap();
+} // Listing 20-9: Refactoring the if and else blocks to contain only the code that differs between the two cases
+
+
