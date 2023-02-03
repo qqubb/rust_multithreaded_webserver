@@ -34,5 +34,11 @@ fn handle_connection(mut stream: TcpStream) {
         .take_while(|line| !line.is_empty())
         .collect();
 
-    println!("Request: {:#?}", http_request);
+    // println!("Request: {:#?}", http_request);
+    
+    // Listing 20-3: Writing a tiny successful HTTP response to the stream
+    let response = "HTTP/1.1 200 OK\r\n\r\n";
+
+    stream.write_all(response.as_bytes()).unwrap();
+    
 } // Listing 20-2: Reading from the TcpStream and printing the data
