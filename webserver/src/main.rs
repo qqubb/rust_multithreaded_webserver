@@ -12,6 +12,7 @@ fn main() {
 */
 
 use std::{
+    fs,
     io::{prelude::*, BufReader},
     net::{TcpListener, TcpStream},
 };
@@ -37,7 +38,16 @@ fn handle_connection(mut stream: TcpStream) {
     // println!("Request: {:#?}", http_request);
     
     // Listing 20-3: Writing a tiny successful HTTP response to the stream
-    let response = "HTTP/1.1 200 OK\r\n\r\n";
+    // let response = "HTTP/1.1 200 OK\r\n\r\n";
+    
+    // Listing 20-5: Sending the contents of hello.html as the body of the response
+
+    let status_line = "HTTP/1.1 200 OK";
+    let contents = fs::read_to_string("hello.html").unwrap();
+    let length = contents.len();
+
+    let response =
+        format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
 
     stream.write_all(response.as_bytes()).unwrap();
     
