@@ -19,7 +19,7 @@ use std::{
 
 use webserver::ThreadPool;
 
-
+/*
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
     
@@ -42,6 +42,22 @@ fn main() {
     } // Listing 20-12: Our ideal ThreadPool interface
     
 }
+*/
+
+fn main() {
+    let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+    let pool = ThreadPool::new(4);
+
+    for stream in listener.incoming().take(2) {
+        let stream = stream.unwrap();
+
+        pool.execute(|| {
+            handle_connection(stream);
+        });
+    }
+
+    println!("Shutting down.");
+} // Listing 20-25: Shut down the server after serving two requests by exiting the loop
 
 /*
 fn handle_connection(mut stream: TcpStream) {
